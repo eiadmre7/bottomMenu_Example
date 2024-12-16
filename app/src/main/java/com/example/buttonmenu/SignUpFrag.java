@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,21 +14,24 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 
 public class SignUpFrag extends Fragment {
-
-    private TextInputEditText et_userName, et_name, et_phone, etEmail, etPassword, et_confirmPassword;
-    private Button signUpBtn;
+    private TextInputEditText etemail, etpassword, etconfirmpassword, etname, etphone,etUsername;
+    private String email,password,name,phone,username;
+    private Button btnSignup,btnCancel;
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+
+
 
     public SignUpFrag() {
         // Required empty public constructor
@@ -36,32 +40,46 @@ public class SignUpFrag extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        View view = inflater.inflate(R.layout.fragment_sign_up, container, false);
-        et_userName = view.findViewById(R.id.et_userName);
-        et_name = view.findViewById(R.id.et_name);
-        et_phone = view.findViewById(R.id.et_phone);
-        etEmail = view.findViewById(R.id.etEmail);
-        etPassword = view.findViewById(R.id.etPassword);
-        et_confirmPassword = view.findViewById(R.id.et_confirmPassword);
-        signUpBtn = view.findViewById(R.id.btnSignUp);
-        if (!checkName()) {
-            Toast.makeText(getActivity(), "Name is short", Toast.LENGTH_SHORT).show();
-        } else if (!checkPone()) {
-            Toast.makeText(getActivity(), "phone number is wrong", Toast.LENGTH_SHORT).show();
-        } else if (!checkEmail()) {
-            Toast.makeText(getActivity(), "email has to be from letters and symbols", Toast.LENGTH_SHORT).show();
-        } else if (!checkPassword()) {
-            Toast.makeText(getActivity(), "password has to be from capital and small letters", Toast.LENGTH_SHORT).show();
-        } else
-            SignupUser();
+        // Inflate the layout for this fragment
+        mAuth = FirebaseAuth.getInstance();
+        db= FirebaseFirestore.getInstance();
+        View view= inflater.inflate(R.layout.fragment_signup, container, false);
+        btnSignup=view.findViewById(R.id.btn_signUp);
+        btnCancel=view.findViewById(R.id.btn_cancel);
+        etemail=view.findViewById(R.id.et_email);
+        etpassword=view.findViewById(R.id.et_password);
+        etconfirmpassword=view.findViewById(R.id.et_ConfirmPass);
+        etname=view.findViewById(R.id.et_name);
+        etphone=view.findViewById(R.id.et_phone);
+        etUsername=view.findViewById(R.id.et_user_name);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.loginFrame.setVisibility(View.VISIBLE);
+                MainActivity.homeFrame.setVisibility(View.INVISIBLE);
+                MainActivity.dashboardFrame.setVisibility(View.INVISIBLE);
+                MainActivity.signUpFrame.setVisibility(View.INVISIBLE);
+            }
+        });
+        btnSignup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SignUp();
+            }
+        });
         return view;
     }
 
-    private void SignupUser() {
-        String email,password;
-        email=etEmail.getText().toString();
-        password=etPassword.getText().toString();
+    private void SignUp() {
+        initStrings();
+        if(!(isValidEmail(email))){
+            Toast.makeText(getActivity(), "Invalid Email", Toast.LENGTH_SHORT).show();
+            etemail.setError("Invalid Email");
+            etemail.requestFocus();
+            return;
+        }
+
+        if(checkPassword()) {
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                         @Override
@@ -70,8 +88,8 @@ public class SignUpFrag extends Fragment {
                                 // Sign in success, update UI with the signed-in user's information
                                 Toast.makeText(getActivity(), "Sign up success.",
                                         Toast.LENGTH_SHORT).show();
-                                //addUserToFireStore();
-                                //updateUI();
+                                addUserToFireStore();
+                                updateUI();
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Toast.makeText(getActivity(), "Authentication failed.",
@@ -80,69 +98,60 @@ public class SignUpFrag extends Fragment {
                         }
                     });
         }
-
-
-    private void addUserToFireBase() {
-        User user = new User(et_name, et_userName, et_phone, etEmail);
-        Map<String, Object> map1;
-        map1 = new HashMap<>();
-        map1.put("Name", user.getName());
-        map1.put("Email", user.getEmail());
-        map1.put("userName", user.getUserName());
-        map1.put("phone", user.getPhone());
     }
 
-
-    private boolean checkName() {
-        boolean flag = true;
-        String name = et_name.getText().toString();
-        name = et_name.getText().toString();
-        name.toCharArray();
-        if (name.length() < 4) {
-            flag = false;
-        }
-        return flag;
+    private void addUserToFireStore() {
+        User user=new User(name,username,phone,email);
+        Map<String, Object> userMap = user.toMap();
+        db.collection("users").document(username).set(userMap)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Toast.makeText(getActivity(), "User added to Firestore", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
-    private boolean checkPone() {
-        String phone = et_phone.getText().toString();
-        int x = phone.length();
-        boolean flag = true;
-        while (flag) {
-            for (int i = 0; i < x; i++) {
-                if (Character.isDigit(phone.charAt(i))) {
-                    flag = false;
-                }
-            }
-        }
-        return flag;
-    }
-
-    private boolean checkEmail() {
-        boolean flag = true;
-        String email = etEmail.getText().toString();
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    public static boolean isValidEmail(String email) {
+        return !TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     private boolean checkPassword() {
-        String pass = etPassword.getText().toString();
-        boolean flag = true;
-        int x = pass.length(), countNum = 0, countCapital = 0, countSmall = 0;
-        for (int i = 0; i < x; i++) {
-            if (Character.isDigit(pass.charAt(i))) {
-                countNum++;
-            }
-            if (Character.isUpperCase(pass.charAt(i))) {
-                countCapital++;
-            } else {
-                countSmall++;
-            }
-
-        }
-
-        if (x < 6 || countSmall == 0 || countCapital == 0 || countNum == 0)
+        if (password.length() < 6){
+            Toast.makeText(getActivity(), "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
             return false;
+        }
+        int c_digit=0, c_upper=0, c_lower=0;
+        for (char c:password.toCharArray()) {
+            if (Character.isDigit(c)) c_digit++;
+            else if (Character.isUpperCase(c)) c_upper++;
+            else if (Character.isLowerCase(c)) c_lower++;
+        }
+        if (c_digit==0 || c_upper==0 || c_lower==0){
+            Toast.makeText(getActivity(), "Password must contain at least one digit, one uppercase letter, and one lowercase letter", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         return true;
-
+    }
+    private void initStrings() {
+        name=etname.getText().toString();
+        username=etUsername.getText().toString();
+        phone=etphone.getText().toString();
+        email=etemail.getText().toString();
+        password=etpassword.getText().toString();
+    }
+    private void updateUI() {
+        MainActivity.loginFrame.setVisibility(View.VISIBLE);
+        MainActivity.signUpFrame.setVisibility(View.INVISIBLE);
+        MainActivity.homeFrame.setVisibility(View.INVISIBLE);
+        MainActivity.dashboardFrame.setVisibility(View.INVISIBLE);
     }
 }

@@ -1,45 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    tools:context=".MainActivity">
 
-    <EditText
-        android:id="@+id/etProductName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Product Name" />
-
-    <EditText
-        android:id="@+id/etProductDetails"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Product Details" />
-
-    <EditText
-        android:id="@+id/etProductPrice"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Product Price"
-        android:inputType="numberDecimal" />
-
-    <ImageView
-        android:id="@+id/ivProductImage"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:src="@drawable/ichome" />
-
-    <Button
-        android:id="@+id/btnSelectImage"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select Image" />
+        android:textSize="25dp"
+        android:layout_gravity="center"
+        android:padding="5dp"
+        android:text="בואו נעלה תמונה לFireBase!!" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/etName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text"
+            android:hint="Name" />
+
+        <ImageButton
+            android:id="@+id/ibTakePicture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@android:drawable/ic_menu_camera" />
+
+        <ImageView
+            android:id="@+id/ivShowPicture"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:srcCompat="@android:drawable/ic_menu_gallery" />
+    </LinearLayout>
 
     <Button
-        android:id="@+id/btnSaveProduct"
-        android:layout_width="wrap_content"
+        android:id="@+id/btSend"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Save Product" />
+        android:text="העלה לFireBase!" />
+
+    <ListView
+        android:id="@+id/lvPicturs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 
 </LinearLayout>

@@ -1,26 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- TODO: Update menu -->
+    <item
+        android:title="Login"
+        android:enabled="true"
+        android:icon="@drawable/iclogin"
+        android:id="@+id/menu_login"/>
     <item
         android:title="Home"
-        android:icon="@drawable/ichome"
-        android:id="@+id/menu_Home"
         android:enabled="true"
-    />
+        android:icon="@drawable/ichome"
+        android:id="@+id/menu_home"/>
     <item
         android:title="Dashboard"
-        android:icon="@drawable/icdashboard"
-        android:id="@+id/menu_Dashboard"
-        android:enabled="true"/>
-    <item
-        android:title="LogIn"
-        android:icon="@drawable/iclogin"
-        android:id="@+id/menu_LogIn"
         android:enabled="true"
-        />
-    <item
-        android:title="SignUp"
-        android:icon="@drawable/signup"
-        android:id="@+id/menu_SignUp"
-        android:enabled="true"/>
-
+        android:icon="@drawable/icdashboard"
+        android:id="@+id/menu_dashboard"/>
 </menu>

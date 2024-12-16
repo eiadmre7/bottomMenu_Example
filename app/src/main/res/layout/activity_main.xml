@@ -7,36 +7,31 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
   <FrameLayout
-      android:id="@+id/Home_Frame"
+      android:id="@+id/LoginFrame"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:layout_above="@+id/bottom_navigation"
-    />
+      android:layout_above="@id/bottomnavigation"/>
   <FrameLayout
-      android:id="@+id/Dashboard_Frame"
+      android:id="@+id/SignupFrame"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:layout_above="@+id/bottom_navigation"
-      />
+      android:layout_above="@id/bottomnavigation"/>
   <FrameLayout
-      android:id="@+id/LogIn_Frame"
+      android:id="@+id/HomeFrame"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:layout_above="@+id/bottom_navigation"
-      />
+      android:layout_above="@id/bottomnavigation"/>
   <FrameLayout
-    android:id="@+id/SignUp_Frame"
+      android:id="@+id/dashboardFrame"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:layout_above="@+id/bottom_navigation"/>
+      android:layout_above="@id/bottomnavigation"/>
 
   <com.google.android.material.bottomnavigation.BottomNavigationView
-      android:id="@+id/bottom_navigation"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:id="@+id/bottomnavigation"
       app:menu="@menu/buttonmenu"
-      android:layout_alignParentBottom="true"
-
-      />
+      android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

@@ -4,70 +4,73 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
-
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
-public static FrameLayout Home_frame,DashBoard_frame,LogIn_frame;
-private Home_Frag homeFrag;
-private DashBoardFrag dashBoardFrag;
-private LoginFrag loginFrag;
-private BottomNavigationView bottomNavigation;
-public static boolean isLogedIn=false;
+    private LoginFrag loginFrag;
+    public static boolean isLoggedIn=false;
+    private DashBoardFrag dashBoardFrag;
+    private HomeFrag homeFrag;
+    private SignUpFrag signupFragment;
+    public static FrameLayout loginFrame,signUpFrame, homeFrame, dashboardFrame;
+    private BottomNavigationView bottomnavigation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Home_frame=findViewById(R.id.Home_Frame);
-        DashBoard_frame=findViewById(R.id.Dashboard_Frame);
-        LogIn_frame=findViewById(R.id.LogIn_Frame);
-        bottomNavigation=findViewById(R.id.bottom_navigation);
-        startFragment();
-
+        loginFrame=findViewById(R.id.LoginFrame);
+        signUpFrame=findViewById(R.id.SignupFrame);
+        homeFrame=findViewById(R.id.HomeFrame);
+        dashboardFrame=findViewById(R.id.dashboardFrame);
+        bottomnavigation=findViewById(R.id.bottomnavigation);
+        start();
     }
-    private void startFragment(){
-       homeFrag=new Home_Frag();
-       dashBoardFrag=new DashBoardFrag();
-       loginFrag=new LoginFrag();
-       getSupportFragmentManager().beginTransaction().replace(R.id.Home_Frame,homeFrag).commit();
-       getSupportFragmentManager().beginTransaction().replace(R.id.Dashboard_Frame,dashBoardFrag).commit();
-       getSupportFragmentManager().beginTransaction().replace(R.id.LogIn_Frame,loginFrag).commit();
-       //hide other fragments
-        DashBoard_frame.setVisibility(View.INVISIBLE);
-        Home_frame.setVisibility(View.INVISIBLE);
-        LogIn_frame.setVisibility(View.VISIBLE);
-        //Set up navigation View listener
-        bottomNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+
+    private void start() {
+        homeFrag = new HomeFrag();
+        getSupportFragmentManager().beginTransaction().replace(R.id.HomeFrame, homeFrag).commit();
+        dashBoardFrag = new DashBoardFrag();
+        getSupportFragmentManager().beginTransaction().replace(R.id.dashboardFrame, dashBoardFrag).commit();
+        loginFrag = new LoginFrag();
+        getSupportFragmentManager().beginTransaction().replace(R.id.LoginFrame, loginFrag).commit();
+        signupFragment = new SignUpFrag();
+        getSupportFragmentManager().beginTransaction().replace(R.id.SignupFrame, signupFragment).commit();
+
+        // Hide other fragments initially
+        dashboardFrame.setVisibility(View.INVISIBLE);
+        homeFrame.setVisibility(View.INVISIBLE);
+        signUpFrame.setVisibility(View.INVISIBLE);
+
+        // Set up bottom navigation view listener
+        bottomnavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if (item.getItemId()==R.id.menu_Home&&isLogedIn){
-                    Home_frame.setVisibility(View.VISIBLE);
-                    DashBoard_frame.setVisibility(View.INVISIBLE);
-                    LogIn_frame.setVisibility(View.INVISIBLE);
+                if (item.getItemId()==R.id.menu_home && isLoggedIn) {
+                    // Show Home fragment
+                    dashboardFrame.setVisibility(View.INVISIBLE);
+                    loginFrame.setVisibility(View.INVISIBLE);
+                    homeFrame.setVisibility(View.VISIBLE);
                 }
-                if (item.getItemId()==R.id.menu_Dashboard&&isLogedIn){
-                    Home_frame.setVisibility(View.INVISIBLE);
-                    DashBoard_frame.setVisibility(View.VISIBLE);
-                    LogIn_frame.setVisibility(View.INVISIBLE);
+                if (item.getItemId()==R.id.menu_dashboard && isLoggedIn)
+                {
+                    // Show Dashboard fragment
+                    homeFrame.setVisibility(View.INVISIBLE);
+                    loginFrame.setVisibility(View.INVISIBLE);
+                    dashboardFrame.setVisibility(View.VISIBLE);
                 }
-                if (item.getItemId()==R.id.menu_LogIn&&!isLogedIn){
-                    Home_frame.setVisibility(View.INVISIBLE);
-                    DashBoard_frame.setVisibility(View.INVISIBLE);
-                    LogIn_frame.setVisibility(View.VISIBLE);
+                if (item.getItemId()==R.id.menu_login && !isLoggedIn) {
+                    // Show Login fragment
+                    homeFrame.setVisibility(View.INVISIBLE);
+                    dashboardFrame.setVisibility(View.INVISIBLE);
+                    loginFrame.setVisibility(View.VISIBLE);
                 }
-
                 return true;
             }
         });
-
 
     }
 }
